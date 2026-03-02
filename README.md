@@ -1,7 +1,7 @@
 # YinYang Extension Documentation
 
 ## Overview
-YinYang is a lightweight, highly optimized Chrome Extension designed to help you learn Chinese (HSK 3 focus). It parses Chinese text on any webpage, highlights words based on your knowledge status (Unknown, Learning, Known, Ignored), and tracks your reading comprehension stats. It also features a real-time integration with `asbplayer` for dynamic subtitle highlighting and an `AnkiConnect` dashboard to sync your vocabulary.
+YinYang is a lightweight, highly optimized Chrome Extension designed to help you learn Chinese. It parses Chinese text on any webpage, highlights words based on your knowledge status (Unknown, Learning, Known, Ignored), and tracks your reading comprehension stats. It also features a real-time integration with `asbplayer` for dynamic subtitle highlighting and an `AnkiConnect` dashboard to sync your vocabulary.
 
 ## Architecture & Core Files
 
