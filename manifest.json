@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "YinYang",
+  "version": "1.0",
+  "description": "HSK 3 Chinese Learning Assistant via seamless word segmentation and highlighting.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "http://127.0.0.1:8765/"
+  ],
+  "options_page": "dashboard.html",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "js": [
+        "db.js",
+        "content.js"
+      ],
+      "all_frames": true
+    }
+  ]
+}

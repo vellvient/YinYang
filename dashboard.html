@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>YinYang Dashboard</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f9fc;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #2c3e50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+
+        .stat-box.known {
+            border-top: 4px solid #4CAF50;
+        }
+
+        .stat-box.learning {
+            border-top: 4px solid #FFEB3B;
+        }
+
+        .stat-box.unknown-red {
+            border-top: 4px solid #F44336;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .anki-section {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #1976D2;
+        }
+
+        button:disabled {
+            background: #9e9e9e;
+            cursor: not-allowed;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #f5f5f5;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-0 {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .status-1 {
+            background: #fffde7;
+            color: #f57f17;
+        }
+
+        .status-2 {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-3 {
+            background: #eceff1;
+            color: #455a64;
+        }
+
+        .status-text-0:after {
+            content: "Unknown";
+        }
+
+        .status-text-1:after {
+            content: "Learning";
+        }
+
+        .status-text-2:after {
+            content: "Known";
+        }
+
+        .status-text-3:after {
+            content: "Ignored";
+        }
+
+        #connection-status {
+            font-weight: bold;
+        }
+
+        .connected {
+            color: #4CAF50;
+        }
+
+        .disconnected {
+            color: #F44336;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>YinYang Dashboard ☯️</h1>
+
+        <div class="stats">
+            <div class="stat-box known">
+                <div class="stat-number" id="count-known">0</div>
+                <div class="stat-label">Known Words</div>
+            </div>
+            <div class="stat-box learning">
+                <div class="stat-number" id="count-learning">0</div>
+                <div class="stat-label">Learning</div>
+            </div>
+            <div class="stat-box unknown-red">
+                <div class="stat-number" id="count-unknown">0</div>
+                <div class="stat-label">Unknown (Marked)</div>
+            </div>
+        </div>
+
+        <div class="anki-section">
+            <h2>AnkiConnect Sync</h2>
+            <p>Status: <span id="connection-status" class="disconnected">Checking...</span></p>
+            <div class="input-group">
+                <label for="deck-name">Target Anki Deck Name</label>
+                <input type="text" id="deck-name" placeholder="e.g. Default" value="Mandarin: Vocabulary">
+            </div>
+            <div class="input-group">
+                <label for="field-name">Target Field Name (e.g. Word, Hanzi, Front)</label>
+                <input type="text" id="field-name" placeholder="Leave empty to search all fields" value="">
+            </div>
+            <button id="sync-btn" style="margin-right: 10px;" disabled>Sync Studied Words to Anki</button>
+            <button id="clear-btn" style="background: #F44336;">Clear All Database</button>
+            <p style="font-size: 13px; color: #555; margin-top: 10px;">
+                * By default, this will query Anki for cards that are <strong>not new</strong> (e.g., `-is:new`).<br />
+                * If Target Field is provided, we will firmly extract vocabulary from that Anki field.
+            </p>
+        </div>
+
+        <h2>Word List</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Word</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="word-table-body">
+                <!-- populated by JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+
+</html>

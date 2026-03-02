@@ -1,0 +1,42 @@
+/* Minimalist highlighting styles */
+.yinyang-word {
+    transition: background-color 0.2s ease;
+    border-radius: 2px;
+}
+
+/* 0 = Unknown, 1 = Learning, 2 = Known, 3 = Ignored */
+.yinyang-word-0 {
+    background-color: rgba(244, 67, 54, 0.4);
+    /* Red for unknown */
+}
+
+.yinyang-word-1 {
+    background-color: rgba(255, 235, 59, 0.4);
+    /* Yellow for learning */
+}
+
+.yinyang-word-2 {
+    background-color: transparent;
+    /* Known words are transparent */
+}
+
+.yinyang-word-3 {
+    background-color: transparent;
+    opacity: 0.5;
+    /* Ignored words might be faded slightly */
+}
+
+.yinyang-word:hover {
+    outline: 1px solid rgba(0, 0, 0, 0.2);
+    cursor: help;
+}
+
+/* Shadow DOM UI Reset */
+#yinyang-ui-root {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2147483647;
+    pointer-events: none;
+    /* Let events pass through the container */
+}
