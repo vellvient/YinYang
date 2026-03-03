@@ -228,8 +228,91 @@
             </p>
         </div>
 
+        <div class="yt-section" style="background: #fff3e0; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+            <h2>YouTube Video Analyzer 📺</h2>
+            <p style="color: #666; margin-top: -10px; margin-bottom: 15px;">Target i+1 content by pre-screening videos.
+                Paste a URL below to estimate comprehension based on your YinYang vocabulary.</p>
+            <div class="input-group">
+                <input type="text" id="yt-url" placeholder="e.g. https://www.youtube.com/watch?v=...">
+            </div>
+            <button id="yt-analyze-btn" style="background: #FF9800;">Analyze Comprehension</button>
 
+            <div id="yt-results"
+                style="display: none; margin-top: 20px; background: white; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <div style="text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 18px;"
+                    id="yt-difficulty">Difficulty: ...</div>
+                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                    <div style="flex: 1; text-align: center; background: #e8f5e9; padding: 10px; border-radius: 4px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #2e7d32;" id="yt-known-pct">0%</div>
+                        <div style="font-size: 12px; color: #666; text-transform: uppercase;">Known</div>
+                    </div>
+                    <div style="flex: 1; text-align: center; background: #fffde7; padding: 10px; border-radius: 4px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #f57f17;" id="yt-learning-pct">0%</div>
+                        <div style="font-size: 12px; color: #666; text-transform: uppercase;">Learning</div>
+                    </div>
+                    <div style="flex: 1; text-align: center; background: #ffebee; padding: 10px; border-radius: 4px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #c62828;" id="yt-unknown-pct">0%</div>
+                        <div style="font-size: 12px; color: #666; text-transform: uppercase;">New Words</div>
+                    </div>
+                </div>
+                <div>
+                    <strong style="color: #333;">New Words Preview:</strong>
+                    <div id="yt-new-words"
+                        style="margin-top: 8px; color: #d32f2f; font-size: 15px; line-height: 1.5; padding: 10px; background: #fafafa; border-radius: 4px; border: 1px solid #eee;">
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Playlist Analyzer -->
+        <div class="yt-section" style="background: #e8f4fd; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+            <h2>Playlist Analyzer 🎬</h2>
+            <p style="color: #666; margin-top: -10px; margin-bottom: 15px;">Analyze a whole playlist and rank videos by
+                how well you understand them — from easiest to hardest.</p>
+            <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+                <div class="input-group" style="flex: 3; min-width: 200px; margin-bottom: 0;">
+                    <input type="text" id="pl-url" placeholder="e.g. https://www.youtube.com/playlist?list=...">
+                </div>
+                <div class="input-group" style="flex: 1; min-width: 80px; margin-bottom: 0;">
+                    <input type="number" id="pl-limit" value="20" min="1" max="50"
+                        style="padding: 10px; border: 1px solid #ccc; border-radius: 4px; width: 100%; box-sizing: border-box;"
+                        title="Max videos to analyze (1–50)">
+                </div>
+                <button id="pl-analyze-btn" style="background: #1565C0; flex-shrink: 0;">Analyze Playlist</button>
+            </div>
+            <div style="font-size: 12px; color: #888; margin-top: 6px;">Max 50 videos. Uses random delays to be polite
+                to YouTube.</div>
+
+            <!-- Progress -->
+            <div id="pl-progress-area" style="display: none; margin-top: 18px;">
+                <div id="pl-status-text" style="font-size: 14px; color: #444; margin-bottom: 8px;">Starting...</div>
+                <div style="background: #ddd; border-radius: 4px; height: 10px; overflow: hidden;">
+                    <div id="pl-progress-bar"
+                        style="background: #1565C0; height: 100%; width: 0%; transition: width 0.4s ease;"></div>
+                </div>
+                <div id="pl-live-log"
+                    style="margin-top: 10px; font-size: 12px; color: #666; max-height: 80px; overflow-y: auto; font-family: monospace;">
+                </div>
+            </div>
+
+            <!-- Results table -->
+            <div id="pl-results-area" style="display: none; margin-top: 20px;">
+                <h3 id="pl-playlist-title" style="margin-top: 0;"></h3>
+                <p id="pl-summary" style="color: #555; font-size: 14px;"></p>
+                <table id="pl-table" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #e3f2fd;">
+                            <th style="padding: 10px; text-align: left; border: 1px solid #c5d8f1;">#</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #c5d8f1;">Video</th>
+                            <th style="padding: 10px; text-align: center; border: 1px solid #c5d8f1;">Known</th>
+                            <th style="padding: 10px; text-align: center; border: 1px solid #c5d8f1;">New</th>
+                            <th style="padding: 10px; text-align: center; border: 1px solid #c5d8f1;">Difficulty</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pl-table-body"></tbody>
+                </table>
+            </div>
+        </div>
         <h2>Word List</h2>
         <table>
             <thead>
