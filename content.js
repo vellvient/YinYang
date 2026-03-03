@@ -20,13 +20,21 @@ function isNodeValidForParsing(node) {
     if (!isYouTube) return true;
 
     const el = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
-    if (!el) return false;
+    if (!el || el === document.body || el === document.documentElement) return false;
 
-    // Allow native youtube captions and video player
-    if (el.closest('#movie_player') || el.closest('.html5-video-player')) return true;
+    // 1. Native youtube captions
+    if (el.closest('.ytp-caption-segment')) return true;
 
-    // Allow asbplayer containers
-    if (el.closest('[id*="asbplayer"]') || el.closest('[class*="asbplayer"]')) return true;
+    // 2. Safely check for asbplayer containers (max 5 levels UP to avoid hitting a global body hook)
+    let current = el;
+    let depth = 0;
+    while (current && current !== document.body && depth < 5) {
+        if (current.className && typeof current.className === 'string' && current.className.toLowerCase().includes('asbplayer')) {
+            return true;
+        }
+        current = current.parentElement;
+        depth++;
+    }
 
     return false;
 }
@@ -416,9 +424,15 @@ async function main() {
     });
 
     // Start parsing
-    parseDOM(document.body);
+    if (!isYouTube) {
+        // Standard webpage, parse everything
+        parseDOM(document.body);
+    } else {
+        // We are on YouTube. We do NOT parse the whole document on load to avoid polluting stats with titles.
+        // We will just passively observe captions as they pop up via asbplayer or native yt captions.
+    }
 
-    // Start observing for dynamically added elements (like asbplayer subtitles)
+    // Start observing for dynamically added elements (like asbplayer subtitles or real-time yt captions)
     dynamicObserver.observe(document.body, {
         childList: true,
         subtree: true,
