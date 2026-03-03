@@ -126,8 +126,9 @@ document.getElementById('sync-btn').addEventListener('click', async () => {
     document.getElementById('sync-btn').textContent = "Syncing...";
 
     try {
-        // Find studied cards (-is:new) in the deck
-        const query = `"deck:${deckName}" -is:due`;
+        // Find studied cards in the deck
+        // "is:review or is:learn" means cards you have seen. "prop:reps>0" means cards answered at least once.
+        const query = `"deck:${deckName}" (is:review OR is:learn OR prop:reps>0)`;
         const cardIds = await invokeAnki('findCards', 6, { query: query });
         if (cardIds.length === 0) {
             alert(`No studied cards found in ${deckName}`);
@@ -140,19 +141,20 @@ document.getElementById('sync-btn').addEventListener('click', async () => {
         let ankiWords = new Set();
         cards.forEach(card => {
             if (fieldName && card.fields[fieldName]) {
-                // If the user specified a field, extract Chinese from it cleanly.
+                // If the user specified a field, extract Chinese from it.
                 const val = card.fields[fieldName].value.replace(/<[^>]*>?/gm, '').trim();
+                // Match English letters, Japanese, etc. and strip them, or just match Chinese characters:
                 const words = val.match(/[\u4e00-\u9fa5]+/g);
                 if (words) {
                     words.forEach(w => ankiWords.add(w));
                 }
             } else {
-                // Fallback: search all fields but strictly require it to be short, pure Chinese.
+                // Fallback: search all fields for short Chinese strings.
                 for (let field in card.fields) {
                     const rawVal = card.fields[field].value.replace(/<[^>]*>?/gm, '').trim();
-                    if (/^[\u4e00-\u9fa5]{1,6}$/.test(rawVal)) {
+                    // Just purely Chinese, 1 to 8 characters max
+                    if (/^[\u4e00-\u9fa5]{1,8}$/.test(rawVal)) {
                         ankiWords.add(rawVal);
-                        // Break if we find a likely candidate to prevent polling definitions
                         break;
                     }
                 }
@@ -207,3 +209,4 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
         loadWords();
     }
 });
+
