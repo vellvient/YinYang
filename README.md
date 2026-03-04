@@ -1,4 +1,3 @@
-This is a solid feature set for a language tool. To make this "GitHub-ready," I’ve restructured the content into a professional, scannable **README.md** format. It uses clear hierarchies, icons, and a layout that appeals to both users and potential contributors.
 
 ---
 
