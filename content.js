@@ -10,10 +10,14 @@ if (window.__yinyangLoaded) {
 
     const isYouTube = window.location.hostname.includes('youtube.com');
 
-    // State for stats
+    // State for stats — occurrence-based counting (matches dashboard analyzer)
     let totalUniqueWords = new Set();
     let knownWords = new Set();
     let learningWords = new Set();
+    let totalOccurrences = 0;
+    let knownOccurrences = 0;
+    let learningOccurrences = 0;
+    let ignoredOccurrences = 0;
 
     // Check if a string contains any Chinese characters
     function containsChinese(text) {
@@ -62,10 +66,14 @@ if (window.__yinyangLoaded) {
                 span.classList.add(`yinyang-word-${status}`);
                 span.dataset.word = segment.segment;
 
-                // Update stats sets
+                // Update stats — track both unique words and occurrences
                 totalUniqueWords.add(segment.segment);
                 if (status === 2) knownWords.add(segment.segment);
                 if (status === 1) learningWords.add(segment.segment);
+                totalOccurrences++;
+                if (status === 2) knownOccurrences++;
+                else if (status === 1) learningOccurrences++;
+                else if (status === 3) ignoredOccurrences++;
 
                 fragment.appendChild(span);
             } else {
@@ -189,15 +197,16 @@ if (window.__yinyangLoaded) {
             span.classList.add(`yinyang-word-${status}`);
         });
 
-        // Update stats
-        if (oldStatus === 2) knownWords.delete(word);
-        if (oldStatus === 1) learningWords.delete(word);
+        // Update stats — adjust occurrence counters by the number of instances on the page
+        const occurrences = spans.length;
 
-        if (status === 2) {
-            knownWords.add(word);
-        } else if (status === 1) {
-            learningWords.add(word);
-        }
+        if (oldStatus === 2) { knownWords.delete(word); knownOccurrences -= occurrences; }
+        if (oldStatus === 1) { learningWords.delete(word); learningOccurrences -= occurrences; }
+        if (oldStatus === 3) { ignoredOccurrences -= occurrences; }
+
+        if (status === 2) { knownWords.add(word); knownOccurrences += occurrences; }
+        else if (status === 1) { learningWords.add(word); learningOccurrences += occurrences; }
+        else if (status === 3) { ignoredOccurrences += occurrences; }
 
         updateStatsUI();
     });
@@ -280,6 +289,10 @@ if (window.__yinyangLoaded) {
             totalUniqueWords.clear();
             knownWords.clear();
             learningWords.clear();
+            totalOccurrences = 0;
+            knownOccurrences = 0;
+            learningOccurrences = 0;
+            ignoredOccurrences = 0;
             updateStatsUI();
         });
 
@@ -310,23 +323,25 @@ if (window.__yinyangLoaded) {
     function updateStatsUI() {
         if (!statsTextElement) return;
 
-        const total = totalUniqueWords.size;
-        if (total === 0) {
+        if (totalOccurrences === 0) {
             statsTextElement.innerHTML = `Scanning...`;
             return;
         }
 
-        const known = knownWords.size;
-        const learning = learningWords.size;
+        const effectiveTotal = totalOccurrences - ignoredOccurrences;
+        if (effectiveTotal === 0) {
+            statsTextElement.innerHTML = `Scanning...`;
+            return;
+        }
 
-        const knownPercent = Math.round((known / total) * 100);
-        const learningPercent = Math.round((learning / total) * 100);
+        const knownPercent = Math.round((knownOccurrences / effectiveTotal) * 100);
+        const learningPercent = Math.round((learningOccurrences / effectiveTotal) * 100);
 
         statsTextElement.innerHTML = `
     Known: <span class="stats-value stats-known">${knownPercent}%</span> 
-    (<span class="stats-value stats-known">${known}</span>) | 
+    (<span class="stats-value stats-known">${knownOccurrences}</span>) | 
     Learning: <span class="stats-value stats-learning">${learningPercent}%</span>
-    (<span class="stats-value stats-learning">${learning}</span>)
+    (<span class="stats-value stats-learning">${learningOccurrences}</span>)
   `;
     }
 
@@ -425,6 +440,10 @@ if (window.__yinyangLoaded) {
             totalUniqueWords.clear();
             knownWords.clear();
             learningWords.clear();
+            totalOccurrences = 0;
+            knownOccurrences = 0;
+            learningOccurrences = 0;
+            ignoredOccurrences = 0;
             updateStatsUI();
         });
 
